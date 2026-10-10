@@ -15,7 +15,7 @@
     height: 100%;
   }
 
-  /* 顶部工具栏 */
+  /* ===== 顶部工具栏 ===== */
   .toolbar {
     background: #fff;
     border-bottom: 1px solid #e4e7ed;
@@ -45,7 +45,7 @@
   .btn-primary { background: #2d8cf0; color: #fff; }
   .btn-primary:hover { background: #1d7ae0; }
 
-  /* 主体 */
+  /* ===== 主体 ===== */
   .main { padding: 16px; min-height: calc(100vh - 57px); }
   .card {
     background: #fff;
@@ -54,13 +54,13 @@
     padding: 24px;
   }
 
-  /* 表单 */
+  /* ===== 表单 ===== */
   .form-area {
     line-height: 2.8;
     font-size: 15px;
   }
 
-  /* 内嵌控件 */
+  /* ===== 内嵌控件 ===== */
   .inline-input,
   .inline-date,
   .inline-time,
@@ -88,10 +88,16 @@
   .inline-input.small { width: 70px; }
   .inline-input.medium { width: 110px; }
   .inline-input.large { width: 180px; }
-  .inline-input.xlarge { width: 280px; }
   .inline-date { width: 135px; }
   .inline-time { width: 65px; }
   .inline-select { width: 70px; }
+
+  /* 自适应宽度输入框 */
+  .auto-input {
+    min-width: 80px;
+    max-width: 100%;
+    transition: width 0.1s;
+  }
 
   .time-group {
     display: inline-flex;
@@ -102,7 +108,7 @@
     flex-wrap: nowrap;
   }
 
-  /* 预览区 */
+  /* ===== 预览区 ===== */
   .preview-title {
     font-size: 14px;
     font-weight: 600;
@@ -123,13 +129,12 @@
     resize: vertical;
   }
 
-  /* 平板 */
+  /* ===== 平板（≤ 1024px） ===== */
   @media (max-width: 1024px) {
     .form-area { font-size: 14.5px; }
-    .inline-input.xlarge { width: 220px; }
   }
 
-  /* 手机 */
+  /* ===== 手机（≤ 768px） ===== */
   @media (max-width: 768px) {
     .toolbar { padding: 8px 12px; gap: 8px; }
     .toolbar .title { width: 100%; margin-bottom: 6px; font-size: 14px; }
@@ -152,7 +157,6 @@
     .inline-input.small { width: 80px; }
     .inline-input.medium { width: 120px; }
     .inline-input.large { width: 150px; }
-    .inline-input.xlarge { width: 100%; margin: 4px 0; }
     .inline-date { width: 140px; }
     .inline-time { width: 70px; }
     .inline-select { width: 76px; }
@@ -162,10 +166,9 @@
     .preview-text { min-height: 200px; }
   }
 
-  /* 小手机 */
+  /* ===== 小手机（≤ 480px） ===== */
   @media (max-width: 480px) {
     .form-area { font-size: 14.5px; }
-    .inline-input.xlarge { width: 100%; display: block; margin: 6px 0; }
     .btn { font-size: 13px; padding: 0 12px; }
   }
 </style>
@@ -180,11 +183,11 @@
 <div class="main">
   <div class="card">
 
-    <!-- 表单：只显示文本框 + 水印，不要括号 -->
+    <!-- 表单 -->
     <div class="form-area">
 
       患者
-      <input class="inline-input medium" id="patientName" placeholder="诱因" />
+      <input class="inline-input auto-input" id="patientName" placeholder="诱因" />
       ，
       <input class="inline-input small" id="hoursAgo" placeholder="如 2、3.5" />
       小时前，
@@ -274,7 +277,7 @@
         <input type="time" class="inline-time" id="medicineTime" />
       </span>
       予以
-      <input class="inline-input xlarge" id="medicineText"
+      <input class="inline-input auto-input" id="medicineText"
         value="阿司匹林300mg、氯吡格雷300mg/替格瑞洛180mg抗血小板聚集，阿托伐他汀 40mg降脂稳斑" />
       ，患者仍有胸痛不适，因在时间窗内，有急诊介入治疗指征，患者及家属商议后决定冠脉造影，
 
@@ -311,6 +314,7 @@
 </div>
 
 <script>
+// ===== 所有字段 ID =====
 const fields = [
   'patientName', 'hoursAgo',
   'onsetDate', 'onsetTime',
@@ -330,6 +334,7 @@ const fields = [
   'labActiveDate', 'labActiveTime'
 ];
 
+// ===== 绑定输入事件 =====
 fields.forEach(id => {
   const el = document.getElementById(id);
   if (el) {
@@ -338,11 +343,13 @@ fields.forEach(id => {
   }
 });
 
+// ===== 时间格式化 =====
 function formatTime(dateStr, timeStr) {
   if (!dateStr) return '（时间）';
   return timeStr ? dateStr + ' ' + timeStr : dateStr;
 }
 
+// ===== 生成预览文本 =====
 function updatePreview() {
   const v = id => document.getElementById(id)?.value || '';
 
@@ -370,6 +377,7 @@ function updatePreview() {
   document.getElementById('previewText').value = text;
 }
 
+// ===== 保存为 .txt =====
 function saveToFile() {
   const text = document.getElementById('previewText').value;
   const blob = new Blob(['\ufeff' + text], { type: 'text/plain;charset=utf-8' });
@@ -390,6 +398,66 @@ function saveToFile() {
   URL.revokeObjectURL(url);
 }
 
+// ===== 自适应宽度输入框 =====
+const autoInputIds = ['patientName', 'medicineText'];
+
+function autoResizeInput(el) {
+  if (!el) return;
+
+  // 复用一个隐藏测量 span
+  let measurer = document.getElementById('__auto_measure__');
+  if (!measurer) {
+    measurer = document.createElement('span');
+    measurer.id = '__auto_measure__';
+    measurer.style.position = 'absolute';
+    measurer.style.visibility = 'hidden';
+    measurer.style.whiteSpace = 'pre';
+    document.body.appendChild(measurer);
+  }
+
+  const style = getComputedStyle(el);
+  measurer.style.font = style.font;
+  measurer.style.padding = style.padding;
+  measurer.style.border = style.border;
+
+  const text = el.value || el.placeholder || '';
+  measurer.textContent = text;
+
+  const borderW = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+  const paddingW = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+  const extra = 10; // 光标余量
+
+  const newWidth = measurer.offsetWidth + borderW + paddingW + extra;
+
+  const min = 80;
+  const max = el.parentElement ? el.parentElement.clientWidth - 20 : 600;
+
+  el.style.width = Math.min(Math.max(newWidth, min), max) + 'px';
+}
+
+autoInputIds.forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  // 初始宽度
+  autoResizeInput(el);
+
+  // 输入时实时调整
+  el.addEventListener('input', () => {
+    autoResizeInput(el);
+    updatePreview();
+  });
+
+  // 窗口大小变化时重新计算
+  window.addEventListener('resize', () => autoResizeInput(el));
+
+  // 字体加载完后重新计算
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => autoResizeInput(el));
+  }
+});
+
+// ===== 初始化预览 =====
 updatePreview();
 </script>
 
