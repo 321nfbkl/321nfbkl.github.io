@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>胸痛病历填写</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+    background: #f5f6fa;
+    color: #2c3e50;
+    height: 100%;
+  }
+
+  /* ===== 顶部工具栏 ===== */
+  .toolbar {
+    background: #fff;
+    border-bottom: 1px solid #e4e7ed;
+    padding: 10px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .toolbar .title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-right: auto;
+  }
+  .btn {
+    height: 36px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-primary { background: #2d8cf0; color: #fff; }
+  .btn-primary:hover { background: #1d7ae0; }
+  .btn-secondary {
+    background: #fff;
+    color: #333;
+    border: 1px solid #d0d7dd;
+  }
+  .btn-secondary:hover { background: #f0f2f5; }
+
+  /* ===== 主体 ===== */
+  .main {
+    padding: 16px;
+    min-height: calc(100vh - 57px);
+  }
+  .card {
+    background: #fff;
+    border: 1px solid #e4e7ed;
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  /* ===== 表单 ===== */
+  .form-area {
+    line-height: 2.6;
+    font-size: 15px;
+  }
+
+  /* ===== 内嵌控件 ===== */
+  .inline-input,
+  .inline-date,
+  .inline-time,
+  .inline-select {
+    height: 30px;
+    border: 1px solid #d0d7dd;
+    border-radius: 4px;
+    padding: 0 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #2c3e50;
+    background: #fff;
+    outline: none;
+    margin: 0 2px;
+    vertical-align: middle;
+  }
+  .inline-input:focus,
+  .inline-date:focus,
+  .inline-time:focus,
+  .inline-select:focus {
+    border-color: #2d8cf0;
+    box-shadow: 0 0 0 2px rgba(45,140,240,0.15);
+  }
+  .inline-input::placeholder { color: #999; font-style: italic; }
+  .inline-input.small { width: 60px; }
+  .inline-input.medium { width: 110px; }
+  .inline-input.large { width: 180px; }
+  .inline-input.xlarge { width: 280px; }
+  .inline-date { width: 135px; }
+  .inline-time { width: 65px; }
+  .inline-select { width: 70px; }
+
+  .time-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin: 0 2px;
+    vertical-align: middle;
+    flex-wrap: nowrap;
+  }
+
+  /* ===== 预览区 ===== */
+  .preview-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 24px 0 8px;
+  }
+  .preview-text {
+    width: 100%;
+    min-height: 220px;
+    border: 1px solid #e4e7ed;
+    border-radius: 6px;
+    padding: 16px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #34495e;
+    background: #fafbfc;
+    outline: none;
+    resize: vertical;
+  }
+
+  /* ===== 平板（≤ 1024px） ===== */
+  @media (max-width: 1024px) {
+    .form-area { line-height: 2.4; font-size: 14.5px; }
+    .inline-input.xlarge { width: 220px; }
+  }
+
+  /* ===== 手机（≤ 768px） ===== */
+  @media (max-width: 768px) {
+    .toolbar { padding: 8px 12px; gap: 8px; }
+    .toolbar .title { width: 100%; margin-bottom: 6px; font-size: 14px; }
+    .btn { height: 40px; padding: 0 16px; font-size: 14px; flex: 1; }
+
+    .main { padding: 12px; }
+    .card { padding: 16px; }
+
+    .form-area { line-height: 2.8; font-size: 15px; }
+
+    .inline-input,
+    .inline-date,
+    .inline-time,
+    .inline-select {
+      height: 36px;
+      font-size: 15px;
+      padding: 0 8px;
+      margin: 2px 1px;
+    }
+    .inline-input.small { width: 70px; }
+    .inline-input.medium { width: 120px; }
+    .inline-input.large { width: 150px; }
+    .inline-input.xlarge { width: 100%; margin: 4px 0; }
+    .inline-date { width: 140px; }
+    .inline-time { width: 70px; }
+    .inline-select { width: 76px; }
+
+    .time-group { flex-wrap: wrap; margin: 2px 0; }
+
+    .preview-text { min-height: 200px; }
+  }
+
+  /* ===== 小手机（≤ 480px） ===== */
+  @media (max-width: 480px) {
+    .form-area { line-height: 2.9; font-size: 14.5px; }
+    .inline-input.xlarge { width: 100%; display: block; margin: 6px 0; }
+    .btn { font-size: 13px; padding: 0 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 顶部工具栏 -->
+<div class="toolbar">
+  <div class="title">胸痛病历填写</div>
+  <button class="btn btn-primary" onclick="saveToFile()">保存到本地</button>
+</div>
+
+<!-- 主体 -->
+<div class="main">
+  <div class="card">
+
+    <!-- 表单 -->
+    <div class="form-area" id="formArea">
+
+      患者
+      <input class="inline-input medium" id="patientName" placeholder="诱因" />，
+      （<input class="inline-input small" id="hoursAgo" placeholder="如 2、3.5" />）小时前，
+      <span class="time-group">
+        <input type="date" class="inline-date" id="onsetDate" />
+        <input type="time" class="inline-time" id="onsetTime" />
+      </span>
+      在家中休息时突发胸痛不适，
+      （<input class="inline-input medium" id="chestLocation" placeholder="如 心前区、胸骨后" />）
+      （<input class="inline-input medium" id="painType" placeholder="如 闷痛、压榨样" />）较剧，
+      伴大汗淋漓，持续不能缓解，
+
+      <select class="inline-select" id="hasAmaurosis">
+        <option value="无">无</option>
+        <option value="有">有</option>
+      </select>一过性黑朦，
+      <select class="inline-select" id="hasDyspneaChest">
+        <option value="无">无</option>
+        <option value="有">有</option>
+      </select>胸闷、气闭，
+      <select class="inline-select" id="hasNausea">
+        <option value="无">无</option>
+        <option value="有">有</option>
+      </select>恶心、呕吐，
+      <select class="inline-select" id="hasCough">
+        <option value="无">无</option>
+        <option value="有">有</option>
+      </select>咳嗽咳痰，
+      <select class="inline-select" id="hasFever">
+        <option value="无">无</option>
+        <option value="有">有</option>
+      </select>发热，
+      <select class="inline-select" id="hasDyspnea">
+        <option value="无">无</option>
+        <option value="有">有</option>
+      </select>呼吸困难，无咯血，无吞咽困难，休息后无缓解，
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="arriveDate" />
+        <input type="time" class="inline-time" id="arriveTime" />
+      </span>
+      （<input class="inline-input medium" id="arriveMethod" placeholder="来院方式" />）我院急诊就诊。
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="doctorDate" />
+        <input type="time" class="inline-time" id="doctorTime" />
+      </span>
+      急诊医师接诊，
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="ecgDate" />
+        <input type="time" class="inline-time" id="ecgTime" />
+      </span>
+      查急诊心电图提示（<input class="inline-input large" id="ecgReport" placeholder="如 V1-V4 ST段抬高" />），
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="ecgDiagDate" />
+        <input type="time" class="inline-time" id="ecgDiagTime" />
+      </span>
+      心电图诊断急性ST段抬高型心肌梗塞，
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="troponinSendDate" />
+        <input type="time" class="inline-time" id="troponinSendTime" />
+      </span>
+      送检肌钙蛋白，
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="troponinResultDate" />
+        <input type="time" class="inline-time" id="troponinResultTime" />
+      </span>
+      肌钙蛋白结果回报（<input class="inline-input small" id="troponinValue" placeholder="如 0.5" />）ng/ml，
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="consultDate" />
+        <input type="time" class="inline-time" id="consultTime" />
+      </span>
+      心内科医师会诊，诊断急性ST段抬高型心肌梗塞。
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="medicineDate" />
+        <input type="time" class="inline-time" id="medicineTime" />
+      </span>
+      予以<input class="inline-input xlarge" id="medicineText"
+        value="阿司匹林300mg、氯吡格雷300mg/替格瑞洛180mg抗血小板聚集，阿托伐他汀 40mg降脂稳斑" />，
+      患者仍有胸痛不适，因在时间窗内，有急诊介入治疗指征，患者及家属商议后决定冠脉造影，
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="consentStartDate" />
+        <input type="time" class="inline-time" id="consentStartTime" />
+      </span>
+      开始知情同意，
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="consentSignDate" />
+        <input type="time" class="inline-time" id="consentSignTime" />
+      </span>
+      签署知情同意书，
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="labStartDate" />
+        <input type="time" class="inline-time" id="labStartTime" />
+      </span>
+      启动导管室，
+
+      <span class="time-group">
+        <input type="date" class="inline-date" id="labActiveDate" />
+        <input type="time" class="inline-time" id="labActiveTime" />
+      </span>
+      导管室激活。为进一步诊治收住入院。
+    </div>
+
+    <!-- 预览区 -->
+    <div class="preview-title">病历预览</div>
+    <textarea class="preview-text" id="previewText" readonly></textarea>
+
+  </div>
+</div>
+
+<script>
+// ===== 所有字段 ID =====
+const fields = [
+  'patientName', 'hoursAgo',
+  'onsetDate', 'onsetTime',
+  'chestLocation', 'painType',
+  'hasAmaurosis', 'hasDyspneaChest', 'hasNausea', 'hasCough', 'hasFever', 'hasDyspnea',
+  'arriveDate', 'arriveTime', 'arriveMethod',
+  'doctorDate', 'doctorTime',
+  'ecgDate', 'ecgTime', 'ecgReport',
+  'ecgDiagDate', 'ecgDiagTime',
+  'troponinSendDate', 'troponinSendTime',
+  'troponinResultDate', 'troponinResultTime', 'troponinValue',
+  'consultDate', 'consultTime',
+  'medicineDate', 'medicineTime', 'medicineText',
+  'consentStartDate', 'consentStartTime',
+  'consentSignDate', 'consentSignTime',
+  'labStartDate', 'labStartTime',
+  'labActiveDate', 'labActiveTime'
+];
+
+// ===== 绑定输入事件 =====
+fields.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('input', updatePreview);
+    el.addEventListener('change', updatePreview);
+  }
+});
+
+// ===== 时间格式化 =====
+function formatTime(dateStr, timeStr) {
+  if (!dateStr) return '（时间）';
+  return timeStr ? dateStr + ' ' + timeStr : dateStr;
+}
+
+// ===== 生成预览文本 =====
+function updatePreview() {
+  const v = id => document.getElementById(id)?.value || '';
+
+  const text =
+    `患者（${v('patientName')}），（${v('hoursAgo')}）小时前，` +
+    `${formatTime(v('onsetDate'), v('onsetTime'))}在家中休息时突发胸痛不适，` +
+    `（${v('chestLocation')}）（${v('painType')}）较剧，伴大汗淋漓，持续不能缓解，` +
+    `（${v('hasAmaurosis')}）一过性黑朦，（${v('hasDyspneaChest')}）胸闷、气闭，` +
+    `（${v('hasNausea')}）恶心、呕吐，（${v('hasCough')}）咳嗽咳痰，（${v('hasFever')}）发热，` +
+    `（${v('hasDyspnea')}）呼吸困难，无咯血，无吞咽困难，休息后无缓解，` +
+    `${formatTime(v('arriveDate'), v('arriveTime'))}（${v('arriveMethod')}）我院急诊就诊。` +
+    `${formatTime(v('doctorDate'), v('doctorTime'))}急诊医师接诊，` +
+    `${formatTime(v('ecgDate'), v('ecgTime'))}查“急诊心电图提示（${v('ecgReport')}）”，` +
+    `${formatTime(v('ecgDiagDate'), v('ecgDiagTime'))}心电图诊断急性ST段抬高型心肌梗塞，` +
+    `${formatTime(v('troponinSendDate'), v('troponinSendTime'))}送检肌钙蛋白，` +
+    `${formatTime(v('troponinResultDate'), v('troponinResultTime'))}肌钙蛋白结果回报（${v('troponinValue')}）ng/ml，` +
+    `${formatTime(v('consultDate'), v('consultTime'))}心内科医师会诊，诊断“急性ST段抬高型心肌梗塞”。` +
+    `${formatTime(v('medicineDate'), v('medicineTime'))}予以“${v('medicineText')}”，` +
+    `患者仍有胸痛不适，因在时间窗内，有急诊介入治疗指征，患者及家属商议后决定冠脉造影，` +
+    `${formatTime(v('consentStartDate'), v('consentStartTime'))}开始知情同意，` +
+    `${formatTime(v('consentSignDate'), v('consentSignTime'))}签署知情同意书，` +
+    `${formatTime(v('labStartDate'), v('labStartTime'))}启动导管室，` +
+    `${formatTime(v('labActiveDate'), v('labActiveTime'))}导管室激活。为进一步诊治收住入院。`;
+
+  document.getElementById('previewText').value = text;
+}
+
+// ===== 保存为 .txt =====
+function saveToFile() {
+  const text = document.getElementById('previewText').value;
+  const blob = new Blob(['\ufeff' + text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+
+  const now = new Date();
+  const stamp = now.getFullYear() +
+    String(now.getMonth() + 1).padStart(2, '0') +
+    String(now.getDate()).padStart(2, '0') + '_' +
+    String(now.getHours()).padStart(2, '0') +
+    String(now.getMinutes()).padStart(2, '0') +
+    String(now.getSeconds()).padStart(2, '0');
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `胸痛病历_${stamp}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ===== 初始化 =====
+updatePreview();
+</script>
+
+</body>
+</html>
