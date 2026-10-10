@@ -15,7 +15,7 @@
     height: 100%;
   }
 
-  /* ===== 顶部工具栏 ===== */
+  /* 顶部工具栏 */
   .toolbar {
     background: #fff;
     border-bottom: 1px solid #e4e7ed;
@@ -31,7 +31,6 @@
   .toolbar .title {
     font-size: 15px;
     font-weight: 600;
-    color: #2c3e50;
     margin-right: auto;
   }
   .btn {
@@ -41,23 +40,13 @@
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
-    transition: background 0.15s;
     flex-shrink: 0;
   }
   .btn-primary { background: #2d8cf0; color: #fff; }
   .btn-primary:hover { background: #1d7ae0; }
-  .btn-secondary {
-    background: #fff;
-    color: #333;
-    border: 1px solid #d0d7dd;
-  }
-  .btn-secondary:hover { background: #f0f2f5; }
 
-  /* ===== 主体 ===== */
-  .main {
-    padding: 16px;
-    min-height: calc(100vh - 57px);
-  }
+  /* 主体 */
+  .main { padding: 16px; min-height: calc(100vh - 57px); }
   .card {
     background: #fff;
     border: 1px solid #e4e7ed;
@@ -65,13 +54,13 @@
     padding: 24px;
   }
 
-  /* ===== 表单 ===== */
+  /* 表单 */
   .form-area {
-    line-height: 2.6;
+    line-height: 2.8;
     font-size: 15px;
   }
 
-  /* ===== 内嵌控件 ===== */
+  /* 内嵌控件 */
   .inline-input,
   .inline-date,
   .inline-time,
@@ -85,7 +74,7 @@
     color: #2c3e50;
     background: #fff;
     outline: none;
-    margin: 0 2px;
+    margin: 0 3px;
     vertical-align: middle;
   }
   .inline-input:focus,
@@ -96,7 +85,7 @@
     box-shadow: 0 0 0 2px rgba(45,140,240,0.15);
   }
   .inline-input::placeholder { color: #999; font-style: italic; }
-  .inline-input.small { width: 60px; }
+  .inline-input.small { width: 70px; }
   .inline-input.medium { width: 110px; }
   .inline-input.large { width: 180px; }
   .inline-input.xlarge { width: 280px; }
@@ -108,16 +97,15 @@
     display: inline-flex;
     align-items: center;
     gap: 2px;
-    margin: 0 2px;
+    margin: 0 3px;
     vertical-align: middle;
     flex-wrap: nowrap;
   }
 
-  /* ===== 预览区 ===== */
+  /* 预览区 */
   .preview-title {
     font-size: 14px;
     font-weight: 600;
-    color: #2c3e50;
     margin: 24px 0 8px;
   }
   .preview-text {
@@ -135,13 +123,13 @@
     resize: vertical;
   }
 
-  /* ===== 平板（≤ 1024px） ===== */
+  /* 平板 */
   @media (max-width: 1024px) {
-    .form-area { line-height: 2.4; font-size: 14.5px; }
+    .form-area { font-size: 14.5px; }
     .inline-input.xlarge { width: 220px; }
   }
 
-  /* ===== 手机（≤ 768px） ===== */
+  /* 手机 */
   @media (max-width: 768px) {
     .toolbar { padding: 8px 12px; gap: 8px; }
     .toolbar .title { width: 100%; margin-bottom: 6px; font-size: 14px; }
@@ -150,7 +138,7 @@
     .main { padding: 12px; }
     .card { padding: 16px; }
 
-    .form-area { line-height: 2.8; font-size: 15px; }
+    .form-area { line-height: 3; font-size: 15px; }
 
     .inline-input,
     .inline-date,
@@ -159,9 +147,9 @@
       height: 36px;
       font-size: 15px;
       padding: 0 8px;
-      margin: 2px 1px;
+      margin: 2px 2px;
     }
-    .inline-input.small { width: 70px; }
+    .inline-input.small { width: 80px; }
     .inline-input.medium { width: 120px; }
     .inline-input.large { width: 150px; }
     .inline-input.xlarge { width: 100%; margin: 4px 0; }
@@ -174,9 +162,9 @@
     .preview-text { min-height: 200px; }
   }
 
-  /* ===== 小手机（≤ 480px） ===== */
+  /* 小手机 */
   @media (max-width: 480px) {
-    .form-area { line-height: 2.9; font-size: 14.5px; }
+    .form-area { font-size: 14.5px; }
     .inline-input.xlarge { width: 100%; display: block; margin: 6px 0; }
     .btn { font-size: 13px; padding: 0 12px; }
   }
@@ -184,30 +172,30 @@
 </head>
 <body>
 
-<!-- 顶部工具栏 -->
 <div class="toolbar">
   <div class="title">胸痛病历填写</div>
   <button class="btn btn-primary" onclick="saveToFile()">保存到本地</button>
 </div>
 
-<!-- 主体 -->
 <div class="main">
   <div class="card">
 
-    <!-- 表单 -->
-    <div class="form-area" id="formArea">
+    <!-- 表单：只显示文本框 + 水印，不要括号 -->
+    <div class="form-area">
 
       患者
-      <input class="inline-input medium" id="patientName" placeholder="诱因" />，
-      （<input class="inline-input small" id="hoursAgo" placeholder="如 2、3.5" />）小时前，
+      <input class="inline-input medium" id="patientName" placeholder="诱因" />
+      ，
+      <input class="inline-input small" id="hoursAgo" placeholder="如 2、3.5" />
+      小时前，
       <span class="time-group">
         <input type="date" class="inline-date" id="onsetDate" />
         <input type="time" class="inline-time" id="onsetTime" />
       </span>
       在家中休息时突发胸痛不适，
-      （<input class="inline-input medium" id="chestLocation" placeholder="如 心前区、胸骨后" />）
-      （<input class="inline-input medium" id="painType" placeholder="如 闷痛、压榨样" />）较剧，
-      伴大汗淋漓，持续不能缓解，
+      <input class="inline-input medium" id="chestLocation" placeholder="如 心前区、胸骨后" />
+      <input class="inline-input medium" id="painType" placeholder="如 闷痛、压榨样" />
+      较剧，伴大汗淋漓，持续不能缓解，
 
       <select class="inline-select" id="hasAmaurosis">
         <option value="无">无</option>
@@ -238,7 +226,8 @@
         <input type="date" class="inline-date" id="arriveDate" />
         <input type="time" class="inline-time" id="arriveTime" />
       </span>
-      （<input class="inline-input medium" id="arriveMethod" placeholder="来院方式" />）我院急诊就诊。
+      <input class="inline-input medium" id="arriveMethod" placeholder="来院方式" />
+      我院急诊就诊。
 
       <span class="time-group">
         <input type="date" class="inline-date" id="doctorDate" />
@@ -250,7 +239,9 @@
         <input type="date" class="inline-date" id="ecgDate" />
         <input type="time" class="inline-time" id="ecgTime" />
       </span>
-      查急诊心电图提示（<input class="inline-input large" id="ecgReport" placeholder="如 V1-V4 ST段抬高" />），
+      查急诊心电图提示
+      <input class="inline-input large" id="ecgReport" placeholder="如 V1-V4 ST段抬高" />
+      ，
 
       <span class="time-group">
         <input type="date" class="inline-date" id="ecgDiagDate" />
@@ -268,7 +259,9 @@
         <input type="date" class="inline-date" id="troponinResultDate" />
         <input type="time" class="inline-time" id="troponinResultTime" />
       </span>
-      肌钙蛋白结果回报（<input class="inline-input small" id="troponinValue" placeholder="如 0.5" />）ng/ml，
+      肌钙蛋白结果回报
+      <input class="inline-input small" id="troponinValue" placeholder="如 0.5" />
+      ng/ml，
 
       <span class="time-group">
         <input type="date" class="inline-date" id="consultDate" />
@@ -280,9 +273,10 @@
         <input type="date" class="inline-date" id="medicineDate" />
         <input type="time" class="inline-time" id="medicineTime" />
       </span>
-      予以<input class="inline-input xlarge" id="medicineText"
-        value="阿司匹林300mg、氯吡格雷300mg/替格瑞洛180mg抗血小板聚集，阿托伐他汀 40mg降脂稳斑" />，
-      患者仍有胸痛不适，因在时间窗内，有急诊介入治疗指征，患者及家属商议后决定冠脉造影，
+      予以
+      <input class="inline-input xlarge" id="medicineText"
+        value="阿司匹林300mg、氯吡格雷300mg/替格瑞洛180mg抗血小板聚集，阿托伐他汀 40mg降脂稳斑" />
+      ，患者仍有胸痛不适，因在时间窗内，有急诊介入治疗指征，患者及家属商议后决定冠脉造影，
 
       <span class="time-group">
         <input type="date" class="inline-date" id="consentStartDate" />
@@ -307,9 +301,9 @@
         <input type="time" class="inline-time" id="labActiveTime" />
       </span>
       导管室激活。为进一步诊治收住入院。
+
     </div>
 
-    <!-- 预览区 -->
     <div class="preview-title">病历预览</div>
     <textarea class="preview-text" id="previewText" readonly></textarea>
 
@@ -317,7 +311,6 @@
 </div>
 
 <script>
-// ===== 所有字段 ID =====
 const fields = [
   'patientName', 'hoursAgo',
   'onsetDate', 'onsetTime',
@@ -337,7 +330,6 @@ const fields = [
   'labActiveDate', 'labActiveTime'
 ];
 
-// ===== 绑定输入事件 =====
 fields.forEach(id => {
   const el = document.getElementById(id);
   if (el) {
@@ -346,13 +338,11 @@ fields.forEach(id => {
   }
 });
 
-// ===== 时间格式化 =====
 function formatTime(dateStr, timeStr) {
   if (!dateStr) return '（时间）';
   return timeStr ? dateStr + ' ' + timeStr : dateStr;
 }
 
-// ===== 生成预览文本 =====
 function updatePreview() {
   const v = id => document.getElementById(id)?.value || '';
 
@@ -380,7 +370,6 @@ function updatePreview() {
   document.getElementById('previewText').value = text;
 }
 
-// ===== 保存为 .txt =====
 function saveToFile() {
   const text = document.getElementById('previewText').value;
   const blob = new Blob(['\ufeff' + text], { type: 'text/plain;charset=utf-8' });
@@ -401,7 +390,6 @@ function saveToFile() {
   URL.revokeObjectURL(url);
 }
 
-// ===== 初始化 =====
 updatePreview();
 </script>
 
