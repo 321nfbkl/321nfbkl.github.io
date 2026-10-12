@@ -5,23 +5,75 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>胸痛病历填写</title>
 <style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --placeholder: #94a3b8;
+    --radius: 8px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+  }
+
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body {
+
+  html { height: 100%; }
+
+  /* ===== 背景：方案 F ===== */
+  body {
     margin: 0;
     padding: 0;
-    font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
-    background: #f5f6fa;
-    color: #2c3e50;
-    height: 100%;
+    font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    font-size: 15px;
+    min-height: 100%;
+
+    background:
+      repeating-linear-gradient(
+        180deg,
+        transparent 0,
+        transparent 39px,
+        rgba(148,163,184,0.06) 39px,
+        rgba(148,163,184,0.06) 40px
+      ),
+      linear-gradient(rgba(148,163,184,0.06) 1px, transparent 1px) 0 0 / 24px 24px,
+      linear-gradient(90deg, rgba(148,163,184,0.06) 1px, transparent 1px) 0 0 / 24px 24px,
+      radial-gradient(circle at 0% 0%, rgba(59,130,246,0.10) 0%, transparent 40%),
+      radial-gradient(circle at 100% 100%, rgba(139,92,246,0.10) 0%, transparent 40%),
+      linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+    background-attachment: fixed;
+  }
+
+  /* ===== 泡泡画布 ===== */
+  #petalCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 1;
+  }
+
+  .toolbar, .main {
+    position: relative;
   }
 
   /* ===== 顶部工具栏 ===== */
   .toolbar {
-    background: #fff;
-    border-bottom: 1px solid #e4e7ed;
-    padding: 10px 16px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
     display: flex;
-    gap: 10px;
+    gap: 12px;
     align-items: center;
     flex-wrap: wrap;
     position: sticky;
@@ -29,35 +81,73 @@
     z-index: 10;
   }
   .toolbar .title {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
+    color: var(--text);
     margin-right: auto;
+    letter-spacing: 0.5px;
   }
+  .toolbar .title::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background: var(--primary);
+    border-radius: 2px;
+    margin-right: 8px;
+    vertical-align: -2px;
+  }
+
   .btn {
-    height: 36px;
-    padding: 0 18px;
+    height: 38px;
+    padding: 0 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
+    transition: all 0.18s ease;
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
   }
-  .btn-primary { background: #2d8cf0; color: #fff; }
-  .btn-primary:hover { background: #1d7ae0; }
+  .btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #fff;
+    box-shadow: 0 1px 2px rgba(37,99,235,0.3);
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 10px rgba(37,99,235,0.35);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(37,99,235,0.3);
+  }
 
   /* ===== 主体 ===== */
-  .main { padding: 16px; min-height: calc(100vh - 57px); }
+  .main {
+    padding: 24px 20px;
+    min-height: calc(100vh - 63px);
+  }
   .card {
-    background: #fff;
-    border: 1px solid #e4e7ed;
-    border-radius: 8px;
-    padding: 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 36px;
+    box-shadow: var(--shadow);
+    max-width: 1400px;
+    margin: 0 auto;
   }
 
   /* ===== 表单 ===== */
   .form-area {
-    line-height: 2.8;
+    line-height: 2.6;
     font-size: 15px;
+    color: var(--text);
   }
 
   /* ===== 内嵌控件 ===== */
@@ -65,83 +155,139 @@
   .inline-date,
   .inline-time,
   .inline-select {
-    height: 30px;
-    border: 1px solid #d0d7dd;
-    border-radius: 4px;
-    padding: 0 8px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0 10px;
     font-size: 14px;
     font-family: inherit;
-    color: #2c3e50;
+    color: var(--text);
     background: #fff;
     outline: none;
-    margin: 0 3px;
+    margin: 0 4px;
     vertical-align: middle;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .inline-input:hover,
+  .inline-date:hover,
+  .inline-time:hover,
+  .inline-select:hover {
+    border-color: #cbd5e1;
   }
   .inline-input:focus,
   .inline-date:focus,
   .inline-time:focus,
   .inline-select:focus {
-    border-color: #2d8cf0;
-    box-shadow: 0 0 0 2px rgba(45,140,240,0.15);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
   }
-  .inline-input::placeholder { color: #999; font-style: italic; }
-  .inline-input.small { width: 70px; }
-  .inline-input.medium { width: 110px; }
-  .inline-input.large { width: 180px; }
-  .inline-date { width: 135px; }
-  .inline-time { width: 65px; }
-  .inline-select { width: 70px; }
+  .inline-input::placeholder { color: var(--placeholder); font-style: italic; }
+  .inline-input.small { width: 80px; }
+  .inline-input.medium { width: 120px; }
+  .inline-input.large { width: 200px; }
+  .inline-date { width: 140px; }
+  .inline-time { width: 70px; }
+  .inline-select {
+    width: 76px;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 14px;
+    padding-right: 26px;
+    cursor: pointer;
+  }
 
-  /* 自适应宽度输入框 */
   .auto-input {
     min-width: 80px;
     max-width: 100%;
-    transition: width 0.1s;
+    transition: width 0.1s, border-color 0.15s, box-shadow 0.15s;
   }
 
+  /* 时间组合 */
   .time-group {
     display: inline-flex;
     align-items: center;
-    gap: 2px;
-    margin: 0 3px;
+    gap: 0;
+    margin: 0 6px;
     vertical-align: middle;
     flex-wrap: nowrap;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    padding: 2px;
+  }
+  .time-group .inline-date,
+  .time-group .inline-time {
+    margin: 0;
+    border-color: transparent;
+    background: transparent;
+  }
+  .time-group .inline-date:focus,
+  .time-group .inline-time:focus {
+    background: #fff;
+    border-color: var(--primary);
+  }
+  .time-group:hover {
+    background: #f1f5f9;
   }
 
   /* ===== 预览区 ===== */
   .preview-title {
     font-size: 14px;
     font-weight: 600;
-    margin: 24px 0 8px;
+    color: var(--text-light);
+    margin: 32px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .preview-title::before {
+    content: "";
+    width: 3px;
+    height: 14px;
+    background: var(--primary);
+    border-radius: 2px;
   }
   .preview-text {
     width: 100%;
-    min-height: 220px;
-    border: 1px solid #e4e7ed;
-    border-radius: 6px;
-    padding: 16px;
-    font-family: inherit;
+    min-height: 240px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 18px 20px;
+    font-family: "SimHei", "Heiti SC", "Microsoft YaHei", sans-serif;
     font-size: 14px;
-    line-height: 1.8;
-    color: #34495e;
-    background: #fafbfc;
+    line-height: 1.9;
+    color: #334155;
+    background: #f8fafc;
     outline: none;
     resize: vertical;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .preview-text:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+    background: #fff;
   }
 
-  /* ===== 平板（≤ 1024px） ===== */
+  /* ===== 平板 ===== */
   @media (max-width: 1024px) {
+    .card { padding: 24px 20px; }
     .form-area { font-size: 14.5px; }
   }
 
-  /* ===== 手机（≤ 768px） ===== */
+  /* ===== 手机 ===== */
   @media (max-width: 768px) {
-    .toolbar { padding: 8px 12px; gap: 8px; }
-    .toolbar .title { width: 100%; margin-bottom: 6px; font-size: 14px; }
-    .btn { height: 40px; padding: 0 16px; font-size: 14px; flex: 1; }
+    body { background-attachment: scroll; }
 
-    .main { padding: 12px; }
-    .card { padding: 16px; }
+    .toolbar { padding: 10px 14px; gap: 8px; }
+    .toolbar .title { width: 100%; margin-bottom: 8px; font-size: 15px; }
+    .btn { height: 42px; padding: 0 18px; font-size: 14px; flex: 1; }
+
+    .main { padding: 14px; }
+    .card { padding: 18px 14px; border-radius: 6px; }
 
     .form-area { line-height: 3; font-size: 15px; }
 
@@ -149,35 +295,43 @@
     .inline-date,
     .inline-time,
     .inline-select {
-      height: 36px;
+      height: 38px;
       font-size: 15px;
-      padding: 0 8px;
-      margin: 2px 2px;
+      padding: 0 10px;
+      margin: 3px 2px;
     }
-    .inline-input.small { width: 80px; }
-    .inline-input.medium { width: 120px; }
-    .inline-input.large { width: 150px; }
-    .inline-date { width: 140px; }
-    .inline-time { width: 70px; }
-    .inline-select { width: 76px; }
+    .inline-input.small { width: 90px; }
+    .inline-input.medium { width: 130px; }
+    .inline-input.large { width: 160px; }
+    .inline-date { width: 145px; }
+    .inline-time { width: 75px; }
+    .inline-select { width: 82px; }
 
-    .time-group { flex-wrap: wrap; margin: 2px 0; }
+    .time-group { flex-wrap: wrap; margin: 3px 0; padding: 3px; }
 
-    .preview-text { min-height: 200px; }
+    .preview-text { min-height: 220px; padding: 14px; }
   }
 
-  /* ===== 小手机（≤ 480px） ===== */
+  /* ===== 小手机 ===== */
   @media (max-width: 480px) {
+    .card { padding: 14px 10px; }
     .form-area { font-size: 14.5px; }
-    .btn { font-size: 13px; padding: 0 12px; }
+    .btn { font-size: 13px; padding: 0 14px; }
+    .inline-input.large { width: 130px; }
   }
 </style>
 </head>
 <body>
 
+<!-- 泡泡画布 -->
+<canvas id="petalCanvas"></canvas>
+
 <div class="toolbar">
   <div class="title">胸痛病历填写</div>
-  <button class="btn btn-primary" onclick="saveToFile()">保存到本地</button>
+  <button class="btn btn-primary" onclick="saveToFile()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    保存到本地
+  </button>
 </div>
 
 <div class="main">
@@ -334,7 +488,6 @@ const fields = [
   'labActiveDate', 'labActiveTime'
 ];
 
-// ===== 绑定输入事件 =====
 fields.forEach(id => {
   const el = document.getElementById(id);
   if (el) {
@@ -343,13 +496,11 @@ fields.forEach(id => {
   }
 });
 
-// ===== 时间格式化 =====
 function formatTime(dateStr, timeStr) {
   if (!dateStr) return '（时间）';
   return timeStr ? dateStr + ' ' + timeStr : dateStr;
 }
 
-// ===== 生成预览文本 =====
 function updatePreview() {
   const v = id => document.getElementById(id)?.value || '';
 
@@ -377,7 +528,6 @@ function updatePreview() {
   document.getElementById('previewText').value = text;
 }
 
-// ===== 保存为 .txt =====
 function saveToFile() {
   const text = document.getElementById('previewText').value;
   const blob = new Blob(['\ufeff' + text], { type: 'text/plain;charset=utf-8' });
@@ -404,7 +554,6 @@ const autoInputIds = ['patientName', 'medicineText'];
 function autoResizeInput(el) {
   if (!el) return;
 
-  // 复用一个隐藏测量 span
   let measurer = document.getElementById('__auto_measure__');
   if (!measurer) {
     measurer = document.createElement('span');
@@ -425,10 +574,9 @@ function autoResizeInput(el) {
 
   const borderW = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
   const paddingW = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
-  const extra = 10; // 光标余量
+  const extra = 10;
 
   const newWidth = measurer.offsetWidth + borderW + paddingW + extra;
-
   const min = 80;
   const max = el.parentElement ? el.parentElement.clientWidth - 20 : 600;
 
@@ -439,23 +587,140 @@ autoInputIds.forEach(id => {
   const el = document.getElementById(id);
   if (!el) return;
 
-  // 初始宽度
   autoResizeInput(el);
-
-  // 输入时实时调整
   el.addEventListener('input', () => {
     autoResizeInput(el);
     updatePreview();
   });
-
-  // 窗口大小变化时重新计算
   window.addEventListener('resize', () => autoResizeInput(el));
-
-  // 字体加载完后重新计算
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => autoResizeInput(el));
   }
 });
+
+// ===== 背景飘泡泡（粉色） =====
+(function initPetals() {
+  const canvas = document.getElementById('petalCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let W, H, dpr;
+  let petals = [];
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function random(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function createPetal(initial = false) {
+    return {
+      x: random(0, W),
+      y: initial ? random(-H, H) : random(-80, -20),
+      size: random(6, 16),
+      speedY: random(0.2, 0.8),
+      speedX: random(-0.3, 0.5),
+      sway: random(0.3, 1.0),
+      swayPhase: random(0, Math.PI * 2),
+      opacity: random(0.4, 0.8),
+      color: 'rgba(255, 200, 220, '
+    };
+  }
+
+  function init() {
+    resize();
+    petals = [];
+    const count = W < 768 ? 22 : 38;
+    for (let i = 0; i < count; i++) {
+      petals.push(createPetal(true));
+    }
+    window.addEventListener('resize', resize);
+  }
+
+  // 画泡泡
+  function drawPetal(p) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+
+    const r = p.size;
+
+    // 泡泡主体
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.closePath();
+
+    // 径向渐变，模拟泡泡质感
+    const grad = ctx.createRadialGradient(
+      -r * 0.3, -r * 0.3, r * 0.1,
+      0, 0, r
+    );
+    grad.addColorStop(0, p.color + (p.opacity * 0.5) + ')');
+    grad.addColorStop(0.7, p.color + (p.opacity * 0.2) + ')');
+    grad.addColorStop(1, p.color + (p.opacity * 0.6) + ')');
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // 边缘描边
+    ctx.strokeStyle = p.color + (p.opacity * 0.8) + ')';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // 左上高光
+    ctx.beginPath();
+    ctx.arc(-r * 0.35, -r * 0.35, r * 0.25, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fill();
+
+    // 右下次高光
+    ctx.beginPath();
+    ctx.arc(r * 0.4, r * 0.4, r * 0.12, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  let lastTime = 0;
+  function animate(time) {
+    const dt = Math.min(time - lastTime, 50);
+    lastTime = time;
+
+    ctx.clearRect(0, 0, W, H);
+
+    for (let i = 0; i < petals.length; i++) {
+      const p = petals[i];
+
+      p.y += p.speedY * (dt / 16);
+      p.swayPhase += 0.02;
+      p.x += p.speedX * (dt / 16) + Math.sin(p.swayPhase) * p.sway * 0.3;
+
+      if (p.y > H + 40) {
+        petals[i] = createPetal(false);
+        continue;
+      }
+      if (p.x < -40) p.x = W + 20;
+      if (p.x > W + 40) p.x = -20;
+
+      drawPetal(p);
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  init();
+  requestAnimationFrame(animate);
+})();
 
 // ===== 初始化预览 =====
 updatePreview();
